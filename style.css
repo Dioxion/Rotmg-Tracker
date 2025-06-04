@@ -1,11 +1,11 @@
-/* Cyber Theme Variables - WIP */
+/* Cyber Theme Variables */
 :root {
     --cyber-bg-dark: #0A0A10;
     --cyber-bg-medium: #10101A;
     --cyber-bg-light: #1A1A2A;
     --cyber-accent-primary: #00FFFF; /* Cyan */
     --cyber-accent-secondary: #FF00FF; /* Magenta */
-    --cyber-accent-error: #F44336; /* Keep similar red for errors/delete */
+    --cyber-accent-error: #F44336; 
     --cyber-text-primary: #E0E0E0;
     --cyber-text-secondary: #A0A0B0;
     --cyber-border-color: #303040;
@@ -17,41 +17,34 @@ body {
     background-color: var(--cyber-bg-dark);
     color: var(--cyber-text-primary);
     margin: 0;
-    /* padding: 10px; Minimal overall padding - Removed for full-width sidebar layout */
-    display: flex; /* Changed from flex to allow page-wrapper to control layout */
-    /* justify-content: center; - Removed */
-    /* align-items: flex-start; - Removed */
+    display: flex;
     min-height: 100vh;
     box-sizing: border-box;
-    /* overflow-y: auto; - Moved to main-content if needed */
-    font-weight: 400; /* Default font weight */
+    font-weight: 400; 
 }
 
-/* New Page Wrapper for Sidebar Layout */
 .page-wrapper {
     display: flex;
     width: 100%;
     min-height: 100vh;
-    transition: grid-template-columns 0.3s ease-in-out; /* Smooth transition */
+    transition: grid-template-columns 0.3s ease-in-out; 
 }
 
-/* Character Sidebar Styles */
 .character-sidebar {
-    width: 280px; /* Fixed width for the sidebar */
+    width: 280px; 
     background-color: var(--cyber-bg-medium);
     padding: 20px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Space between sections in sidebar */
-    height: 100vh; /* Full viewport height */
-    overflow-y: auto; /* Scroll if content overflows */
+    gap: 20px; 
+    height: 100vh; 
+    overflow-y: auto; 
     border-right: 1px solid var(--cyber-border-color);
-    transition: width 0.3s ease-in-out, padding 0.3s ease-in-out, transform 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Smooth transition */
-    flex-shrink: 0; /* Prevent sidebar from shrinking if content is too wide */
+    transition: width 0.3s ease-in-out, padding 0.3s ease-in-out, transform 0.3s ease-in-out, opacity 0.3s ease-in-out; 
+    flex-shrink: 0; 
 }
 
-/* New Sidebar Header for Title and Add Button */
 .sidebar-header {
     display: flex;
     justify-content: space-between;
@@ -61,26 +54,22 @@ body {
 
 .character-sidebar h2 {
     color: var(--cyber-accent-primary);
-    margin: 0; /* Remove default margins as sidebar-header handles spacing */
+    margin: 0; 
     font-size: 1.8em;
     font-weight: 600;
     text-shadow: 0 0 5px var(--cyber-accent-primary);
-}
-
-.sidebar-title-text { /* If needed for specific styling of the text only */
-    /* Example:  margin-right: 10px; */
 }
 
 .icon-button {
     background: none;
     border: none;
     color: var(--cyber-accent-primary);
-    font-size: 1.8em; /* Make icon larger */
+    font-size: 1.8em; 
     font-weight: bold;
     cursor: pointer;
-    padding: 0 5px; /* Minimal padding */
+    padding: 0 5px; 
     transition: color 0.2s ease, text-shadow 0.2s ease;
-    line-height: 1; /* Ensure consistent vertical alignment */
+    line-height: 1; 
 }
 
 .icon-button:hover {
@@ -88,35 +77,31 @@ body {
     text-shadow: 0 0 7px var(--cyber-accent-secondary);
 }
 
-.add-char-button { /* Specific styling for the plus button if needed */
-    /* font-size: 2em; */
-}
-
 .character-list-container {
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Space between character items */
-    flex-grow: 1; /* Allows list to take available space before controls */
+    gap: 8px; 
+    flex-grow: 1; 
 }
 
 .character-item {
     background-color: var(--cyber-bg-light);
     color: var(--cyber-text-secondary);
     border: 1px solid var(--cyber-border-color);
-    border-radius: 4px; /* Sharper edges */
+    border-radius: 4px; 
     padding: 12px 15px;
     font-size: 1em;
-    cursor: pointer; /* Cursor for the whole item if we want main item click to switch */
+    cursor: default; /* Default cursor for item, specific for name/icons */
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
     text-align: left;
     font-weight: 500;
-    display: flex; /* ADD THIS: Make character-item a flex container for its children */
-    justify-content: space-between; /* ADD THIS: Space out name and icons */
-    align-items: center; /* ADD THIS: Vertically align name and icons */
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
 }
 
 .character-item:hover {
-    background-color: #252535; /* Slightly lighter hover */
+    background-color: #252535; 
     border-color: var(--cyber-accent-secondary);
     color: var(--cyber-text-primary);
     transform: translateX(3px);
@@ -131,24 +116,30 @@ body {
     box-shadow: 0 0 8px var(--cyber-accent-primary);
 }
 
+.character-item.editing-name {
+    /* Styles for when item is in edit mode, if needed beyond hiding/showing children */
+}
+
 .character-item-name {
-    flex-grow: 1; /* Allow name to take available space */
+    flex-grow: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    margin-right: 5px; 
+    cursor: pointer; 
 }
 
 .character-item-actions {
     display: flex;
-    gap: 8px; /* Space between icons */
-    margin-left: 10px; /* Space from name */
+    gap: 8px; 
+    margin-left: 10px; 
 }
 
 .char-action-icon {
     background: none;
     border: none;
     color: var(--cyber-text-secondary);
-    font-size: 1.1em; /* Adjust icon size as needed */
+    font-size: 1.1em; 
     cursor: pointer;
     padding: 2px;
     transition: color 0.2s ease, transform 0.2s ease;
@@ -167,77 +158,60 @@ body {
     color: var(--cyber-accent-primary);
 }
 
-/* OLD .character-controls-sidebar is now .add-character-controls-sidebar */
-/*
-.add-character-controls-sidebar { 
-    display: flex; 
-    gap: 10px; 
-    padding-top: 10px; 
-    border-top: 1px solid var(--cyber-border-color); 
-    margin-top: 15px; 
-}
-
-.add-character-controls-sidebar input[type="text"] {
+.character-name-edit-input {
     flex-grow: 1; 
-    padding: 10px;
     background-color: var(--cyber-bg-dark);
     color: var(--cyber-text-primary);
-    border: 1px solid var(--cyber-border-color);
-    border-radius: 4px;
-    font-size: 0.9em;
-    box-sizing: border-box;
+    border: 1px solid var(--cyber-accent-primary); 
+    border-radius: 3px;
+    padding: 6px 8px; 
     font-family: var(--cyber-font-family);
-}
-
-.add-character-controls-sidebar input[type="text"]:focus {
-    outline: none;
-    border-color: var(--cyber-accent-primary);
+    font-size: 0.95em; 
     box-shadow: 0 0 5px var(--cyber-accent-primary);
+    min-width: 50px; 
 }
 
-.add-character-controls-sidebar .small-confirm-button {
-    padding: 10px 15px;
-    border-radius: 4px;
-    font-size: 0.9em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-    border: 1px solid transparent;
-    text-align: center;
-    font-family: var(--cyber-font-family);
-    background-color: var(--cyber-accent-primary);
-    color: var(--cyber-bg-dark);
-    border-color: var(--cyber-accent-primary);
+.character-name-edit-input:focus {
+    outline: none;
+}
+
+.character-item.editing-name .char-action-icon {
+    font-size: 1.2em; 
+    padding: 4px;    
+    margin-left: 5px; 
+    line-height: 1;   
     flex-shrink: 0; 
 }
 
-.add-character-controls-sidebar .small-confirm-button:hover {
-    background-color: #00DFDF;
-    transform: translateY(-1px);
-    box-shadow: 0 0 10px var(--cyber-accent-primary);
+.save-rename-button:hover {
+    color: #4CAF50; 
+    text-shadow: 0 0 5px #4CAF50;
 }
-*/
 
-/* Main Content Area Styles */
+.cancel-rename-button:hover {
+    color: var(--cyber-accent-error); 
+    text-shadow: 0 0 5px var(--cyber-accent-error);
+}
+
 .main-content {
-    flex-grow: 1; /* Takes remaining width */
-    padding: 15px; /* Increased padding slightly */
+    flex-grow: 1; 
+    padding: 15px; 
     box-sizing: border-box;
-    overflow-y: auto; /* Allow scrolling for main content */
+    overflow-y: auto; 
     height: 100vh;
-    transition: margin-left 0.3s ease-in-out; /* Smooth transition for main content */
-    position: relative; /* For positioning the toggle button */
+    transition: margin-left 0.3s ease-in-out; 
+    position: relative; 
 }
 
-.container { /* This now applies to the content within main-content */
+.container { 
     background-color: var(--cyber-bg-medium);
-    border-radius: 6px; /* Sharper */
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.1); /* Subtle cyan glow */
+    border-radius: 6px; 
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.1); 
     padding: 25px;
     width: 100%;
-    max-width: 1800px; /* Max width for the content block */
+    max-width: 1800px; 
     box-sizing: border-box;
-    margin: 0 auto; /* Center the container if max-width is hit */
+    margin: 0 auto; 
     border: 1px solid var(--cyber-border-color);
 }
 
@@ -246,7 +220,7 @@ h1, h2 {
     color: var(--cyber-accent-primary);
     text-align: center;
     margin-bottom: 30px;
-    font-weight: 700; /* Bold */
+    font-weight: 700; 
     letter-spacing: 1.5px;
     font-size: 2.5em;
     text-shadow: 0 0 8px var(--cyber-accent-primary);
@@ -258,17 +232,24 @@ h2 {
     text-shadow: 0 0 6px var(--cyber-accent-primary);
 }
 
+.achievements-section h2.achievements-heading,
+.character-sidebar h2 { /* This already styles the sidebar H2, .sidebar-header h2 specific is fine */
+    text-align: left;
+    font-size: 1.8em;
+    margin-bottom: 15px;
+}
+
 .dungeon-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 10px; /* Increased gap slightly */
+    gap: 10px; 
     margin-bottom: 30px;
     padding: 0 5px;
 }
 
 .dungeon-box {
     background-color: var(--cyber-bg-light);
-    border-radius: 4px; /* Sharper */
+    border-radius: 4px; 
     padding: 8px;
     display: flex;
     flex-direction: column;
@@ -278,7 +259,7 @@ h2 {
     transition: transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out, background-color 0.2s ease, border-color 0.2s ease;
     border: 1px solid var(--cyber-border-color);
     position: relative;
-    min-height: 120px; /* Adjusted min height */
+    min-height: 120px; 
     justify-content: space-between;
     cursor: pointer;
 }
@@ -289,9 +270,8 @@ h2 {
     border-color: var(--cyber-accent-secondary);
 }
 
-/* Styles for completed dungeons */
 .dungeon-box.completed {
-    background-color: #103030; /* Dark cyan tint */
+    background-color: #103030; 
     border-color: var(--cyber-accent-primary);
     box-shadow: 0 0 12px var(--cyber-accent-primary);
 }
@@ -346,7 +326,7 @@ h2 {
 }
 
 .counter-button {
-    background-color: var(--cyber-border-color); /* Darker buttons */
+    background-color: var(--cyber-border-color); 
     color: var(--cyber-text-primary);
     border: 1px solid #505060;
     border-radius: 3px;
@@ -396,7 +376,7 @@ h2 {
 
 .reset-button {
     display: block;
-    width: 220px; /* Slightly wider */
+    width: 220px; 
     margin: 0 auto 30px auto;
     padding: 12px 18px;
     background-color: var(--cyber-accent-error);
@@ -439,7 +419,6 @@ h2 {
     font-size: 0.95em;
 }
 
-/* NEW: Achievement Row Styles */
 .achievement-row {
     background-color: var(--cyber-bg-medium);
     border: 1px solid var(--cyber-border-color);
@@ -456,7 +435,7 @@ h2 {
 }
 
 .achievement-row.completed {
-    background-color: #102525; /* Darker cyan tint */
+    background-color: #102525; 
     border-color: var(--cyber-accent-primary);
     box-shadow: 0 0 8px var(--cyber-accent-primary);
 }
@@ -491,7 +470,7 @@ h2 {
     font-size: 0.9em;
     color: var(--cyber-text-secondary);
     margin-bottom: 10px;
-    font-weight: 300; /* Lighter weight for descriptions */
+    font-weight: 300; 
 }
 
 .achievement-requirements {
@@ -507,7 +486,7 @@ h2 {
     margin-right: 6px;
     margin-bottom: 6px;
     border: 1px solid var(--cyber-border-color);
-    cursor: pointer; /* Added cursor */
+    cursor: pointer; 
     transition: background-color 0.1s, color 0.1s, border-color 0.1s, transform 0.1s;
 }
 
@@ -533,21 +512,10 @@ h2 {
     text-shadow: 0 0 3px var(--cyber-accent-primary);
 }
 
-/* Responsive adjustments */
-@media (max-width: 1400px) {
-    /* (existing rules) */
-}
-
-@media (max-width: 1200px) {
-    /* (existing rules) */
-}
-
-@media (max-width: 992px) {
-    /* (existing rules) */
-}
-
+@media (max-width: 1400px) {}
+@media (max-width: 1200px) {}
+@media (max-width: 992px) {}
 @media (max-width: 768px) {
-    /* (existing rules) */
     .achievement-title {
         flex-direction: column;
         align-items: flex-start;
@@ -560,7 +528,6 @@ h2 {
 }
 
 @media (max-width: 576px) {
-    /* (existing rules) */
     .achievement-row {
         padding: 10px;
     }
@@ -574,20 +541,19 @@ h2 {
 }
 
 .achievements-section h2.achievements-heading {
-    display: flex; /* Make the h2 a flex container */
-    align-items: baseline; /* Align items at their text baseline */
-    justify-content: center; /* Center the entire line */
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
-    gap: 10px; /* Space between "Achievements" and the bonus display */
-    margin-bottom: 15px; /* Adjust as needed */
-    font-size: 1.8em; /* Keep original size */
+    display: flex; 
+    align-items: baseline; 
+    justify-content: center; 
+    flex-wrap: wrap; 
+    gap: 10px; 
+    margin-bottom: 15px; 
+    font-size: 1.8em; 
 }
 
-/* Toggle Button Styles */
 .toggle-sidebar-button {
-    position: absolute; /* Position relative to main-content */
-    top: 18px; /* Adjusted */
-    left: 18px;  /* Adjusted */
+    position: absolute; 
+    top: 18px; 
+    left: 18px;  
     background-color: var(--cyber-bg-light);
     color: var(--cyber-accent-primary);
     border: 1px solid var(--cyber-border-color);
@@ -595,7 +561,7 @@ h2 {
     padding: 8px 12px;
     font-size: 1.3em;
     cursor: pointer;
-    z-index: 1000; /* Ensure it's above other content */
+    z-index: 1000; 
     transition: background-color 0.2s ease, left 0.3s ease-in-out, color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -605,19 +571,14 @@ h2 {
     box-shadow: 0 0 8px var(--cyber-accent-primary);
 }
 
-/* Styles when sidebar is collapsed */
 .page-wrapper.sidebar-collapsed .character-sidebar {
     width: 0;
     padding-left: 0;
     padding-right: 0;
     opacity: 0;
     transform: translateX(-100%);
-    overflow: hidden; /* Hide content when collapsed */
+    overflow: hidden; 
     border-right: none;
 }
 
-/* Adjust toggle button position when sidebar is collapsed */
-.page-wrapper.sidebar-collapsed .toggle-sidebar-button {
-    /* Optionally, move the button or change its appearance when sidebar is hidden */
-    /* For now, it will stay, allowing to re-open */
-}
+.page-wrapper.sidebar-collapsed .toggle-sidebar-button {}
