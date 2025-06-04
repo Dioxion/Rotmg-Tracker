@@ -290,26 +290,21 @@ document.addEventListener('DOMContentLoaded', () => {
             trackerData = JSON.parse(data);
             if (!trackerData.characters) trackerData.characters = {};
 
-            // Initialize or validate characterOrder
             if (!Array.isArray(trackerData.characterOrder)) {
-                // If characterOrder doesn't exist or isn't an array, create it from existing character keys
-                // This provides a best-effort order for data from before characterOrder was introduced.
                 trackerData.characterOrder = Object.keys(trackerData.characters);
             } else {
-                // Ensure characterOrder is consistent with characters object (remove orphans)
                 trackerData.characterOrder = trackerData.characterOrder.filter(name => trackerData.characters.hasOwnProperty(name));
-                // Ensure all characters in characters object are in characterOrder (add missing)
                 Object.keys(trackerData.characters).forEach(name => {
                     if (!trackerData.characterOrder.includes(name)) {
-                        trackerData.characterOrder.push(name); // Add to end if missing, order might be not original but char is present
+                        trackerData.characterOrder.push(name);
                     }
                 });
             }
             
-            const characterNames = trackerData.characterOrder; // Use ordered list
+            const characterNames = trackerData.characterOrder; 
             if (!trackerData.currentCharacterName || !trackerData.characters[trackerData.currentCharacterName]) {
                 if (characterNames.length > 0) {
-                    trackerData.currentCharacterName = characterNames[0]; // Default to first in ordered list
+                    trackerData.currentCharacterName = characterNames[0]; 
                 } else {
                     trackerData.currentCharacterName = null;
                 }
@@ -318,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
             trackerData = {
                 currentCharacterName: null, 
                 characters: {},
-                characterOrder: [] // Initialize characterOrder for new data
+                characterOrder: [] 
             };
         }
         if (trackerData.currentCharacterName) {
@@ -332,36 +327,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getCurrentCharacterName() {
-        if (!trackerData || !trackerData.currentCharacterName) {
-            // This case should ideally be handled by loadTrackerData ensuring a default
-            // or the initial render creating one if the list is empty.
-            // If somehow it's still null here, it might indicate an issue in the init flow.
-            // For now, if renderCharacterList is called and this is null, it will try to create 'Default'
-            return trackerData.currentCharacterName; // Can be null
-        }
         return trackerData.currentCharacterName;
     }
 
     function getCurrentCharacterData() {
         const charName = getCurrentCharacterName();
         if (!charName || !trackerData.characters || !trackerData.characters[charName]) {
-            console.warn(`Data for current character "${charName}" not found or charName is null. Trying to recover.`);
-            // Attempt to recover or set a default if absolutely necessary
-            // This might happen if all characters were deleted and state wasn't perfectly handled,
-            // though current delete logic tries to prevent this.
             if (Object.keys(trackerData.characters).length > 0) {
-                trackerData.currentCharacterName = Object.keys(trackerData.characters)[0];
-                initializeCharacterDataIfNeeded(trackerData.currentCharacterName);
-                saveTrackerData();
-                return trackerData.characters[trackerData.currentCharacterName];
-            } else {
-                // This is a critical state - no characters exist. 
-                // renderCharacterList should ideally catch this and create 'Default'.
-                // Returning a new temp character data to prevent immediate errors further down,
-                // but this state should be resolved by UI creating a new character.
-                console.error("Critical: No characters exist. UI should prompt for creation.");
-                return createNewCharacterData(); // Return a volatile new data to avoid crashes
+                trackerData.currentCharacterName = trackerData.characterOrder[0] || Object.keys(trackerData.characters)[0];
+                if(trackerData.currentCharacterName) {
+                    initializeCharacterDataIfNeeded(trackerData.currentCharacterName);
+                    saveTrackerData();
+                    return trackerData.characters[trackerData.currentCharacterName];
+                }
             }
+            console.error("Critical: No characters exist or current character data is missing.");
+            return createNewCharacterData(); 
         }
         initializeCharacterDataIfNeeded(charName); 
         return trackerData.characters[charName];
@@ -369,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getDungeonCount(dungeonName) {
         const charData = getCurrentCharacterData();
-        if (!charData || charData.dungeons[dungeonName] === undefined) { // Added !charData check
+        if (!charData || typeof charData.dungeons[dungeonName] === 'undefined') { 
             return 0; 
         }
         return charData.dungeons[dungeonName];
@@ -377,14 +358,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function setDungeonCount(dungeonName, count) {
         const charData = getCurrentCharacterData();
-        if (!charData) return; // Prevent error if charData is somehow null
+        if (!charData) return; 
         charData.dungeons[dungeonName] = count;
         saveTrackerData();
     }
 
     function isAchievementUnlocked(achievementId) {
         const charData = getCurrentCharacterData();
-        if (!charData || charData.achievements[achievementId + '_unlocked'] === undefined) { // Added !charData check
+        if (!charData || typeof charData.achievements[achievementId + '_unlocked'] === 'undefined') { 
             return false;
         }
         return charData.achievements[achievementId + '_unlocked'];
@@ -392,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function setAchievementUnlocked(achievementId, isUnlocked) {
         const charData = getCurrentCharacterData();
-        if (!charData) return; // Prevent error
+        if (!charData) return; 
         charData.achievements[achievementId + '_unlocked'] = isUnlocked;
         saveTrackerData();
     }
@@ -401,8 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let baseName = "Character";
         let counter = 1;
         let potentialName = `${baseName} ${counter}`;
-        // Ensure trackerData.characters is defined before checking keys
-        const existingNames = trackerData.characters ? Object.keys(trackerData.characters) : [];
+        const existingNames = trackerData.characterOrder || [];
 
         while (existingNames.includes(potentialName)) {
             counter++;
@@ -423,7 +403,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         initializeCharacterDataIfNeeded(name); 
         
-        // Add to characterOrder
         if (!trackerData.characterOrder.includes(name)) {
             trackerData.characterOrder.push(name);
         }
@@ -435,22 +414,102 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function switchCharacter(name) {
-        if (trackerData.characters[name]) {
+        if (trackerData.characters && trackerData.characters[name]) {
             trackerData.currentCharacterName = name;
-            // initializeCharacterDataIfNeeded(name); // Already ensures data exists, not strictly needed here if addCharacter did its job
-            saveTrackerData(); // Save the new current character
-            refreshAllDataDisplay(); // Update dungeon grid and achievements for the new char
-            renderCharacterList(); // Re-render sidebar to highlight the active character
+            saveTrackerData(); 
+            refreshAllDataDisplay(); 
+            renderCharacterList(); 
         } else {
             console.error(`Character ${name} not found for switching.`);
         }
     }
 
-    function promptForRename(oldName) {
-        const newName = prompt(`Enter new name for character "${oldName}":`, oldName);
-        if (newName && newName.trim() !== "") {
-            renameCharacter(oldName, newName.trim());
-        }
+    function enableInlineRename(characterItem, currentName) {
+        const nameSpan = characterItem.querySelector('.character-item-name');
+        const actionsDiv = characterItem.querySelector('.character-item-actions');
+
+        if (!nameSpan || !actionsDiv) return;
+        if (characterItem.classList.contains('editing-name')) return; 
+        characterItem.classList.add('editing-name');
+
+        nameSpan.style.display = 'none';
+        actionsDiv.style.display = 'none';
+
+        const inputField = document.createElement('input');
+        inputField.type = 'text';
+        inputField.value = currentName;
+        inputField.classList.add('character-name-edit-input');
+        
+        const saveButton = document.createElement('button');
+        saveButton.innerHTML = '&#10003;'; 
+        saveButton.classList.add('char-action-icon', 'save-rename-button');
+        saveButton.title = 'Save name';
+
+        const cancelButton = document.createElement('button');
+        cancelButton.innerHTML = '&#10005;'; 
+        cancelButton.classList.add('char-action-icon', 'cancel-rename-button');
+        cancelButton.title = 'Cancel rename';
+
+        let handleDocumentClickWhileEditing;
+
+        const restoreDisplay = () => {
+            if (!characterItem.classList.contains('editing-name')) return; 
+            
+            if (inputField.parentNode === characterItem) characterItem.removeChild(inputField);
+            if (saveButton.parentNode === characterItem) characterItem.removeChild(saveButton);
+            if (cancelButton.parentNode === characterItem) characterItem.removeChild(cancelButton);
+            
+            nameSpan.style.display = ''; 
+            actionsDiv.style.display = ''; 
+            characterItem.classList.remove('editing-name');
+            document.removeEventListener('mousedown', handleDocumentClickWhileEditing);
+        };
+
+        handleDocumentClickWhileEditing = (event) => {
+            if (!characterItem.contains(event.target)) {
+                restoreDisplay();
+            }
+        };
+
+        saveButton.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            const newName = inputField.value.trim();
+            if (newName && newName !== currentName) {
+                renameCharacter(currentName, newName); 
+            } else if (newName === currentName) {
+                restoreDisplay(); 
+            } else if (!newName) {
+                 alert("Character name cannot be empty."); 
+                 inputField.focus(); 
+            }
+        });
+
+        cancelButton.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            restoreDisplay();
+        });
+
+        inputField.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                saveButton.click();
+            }
+            if (e.key === 'Escape') {
+                cancelButton.click();
+            }
+        });
+        
+        inputField.addEventListener('click', (e) => e.stopPropagation()); 
+
+        characterItem.appendChild(inputField);
+        characterItem.appendChild(saveButton);
+        characterItem.appendChild(cancelButton);
+        
+        inputField.focus();
+        inputField.select();
+
+        setTimeout(() => {
+            document.addEventListener('mousedown', handleDocumentClickWhileEditing);
+        }, 0);
     }
 
     function renameCharacter(oldName, newName) {
@@ -467,7 +526,6 @@ document.addEventListener('DOMContentLoaded', () => {
         trackerData.characters[newName] = JSON.parse(JSON.stringify(trackerData.characters[oldName]));
         delete trackerData.characters[oldName];
 
-        // Update in characterOrder
         const index = trackerData.characterOrder.indexOf(oldName);
         if (index !== -1) {
             trackerData.characterOrder[index] = newName;
@@ -486,17 +544,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function getAllCharacterNames() {
         if (!trackerData || !trackerData.characterOrder) {
-            // This might happen if data is corrupted or not loaded properly
-            // Fallback to keys from characters object if characterOrder is missing
             console.warn("trackerData.characterOrder not found, falling back to Object.keys from characters.");
             return Object.keys(trackerData.characters || {});
         }
-        return [...trackerData.characterOrder]; // Return a copy to prevent direct modification
+        return [...trackerData.characterOrder]; 
     }
     
     function deleteCharacter(name) {
         if (!trackerData.characters[name]) return;
-        if (trackerData.characterOrder.length <= 1) { // Check length of ordered list
+        if (trackerData.characterOrder.length <= 1) { 
             alert("Cannot delete the last character. Add another character first or reset this one.");
             return;
         }
@@ -505,11 +561,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const wasCurrentCharacter = trackerData.currentCharacterName === name;
             delete trackerData.characters[name];
             
-            // Remove from characterOrder
             trackerData.characterOrder = trackerData.characterOrder.filter(charName => charName !== name);
             
             if (wasCurrentCharacter) {
-                // Switch to the first character in the updated ordered list, if any characters remain
                 trackerData.currentCharacterName = trackerData.characterOrder.length > 0 ? trackerData.characterOrder[0] : null;
             }
             saveTrackerData();
@@ -517,8 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (wasCurrentCharacter && trackerData.currentCharacterName) {
                 switchCharacter(trackerData.currentCharacterName);
             } else if (wasCurrentCharacter && !trackerData.currentCharacterName) {
-                 // This implies the list became empty, which the check above should prevent
-                renderCharacterList(); // Will attempt to create Default if list is empty
+                renderCharacterList(); 
                 refreshAllDataDisplay(); 
             } else {
                 renderCharacterList(); 
@@ -527,6 +580,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function refreshAllDataDisplay() {
+        if (!dungeonGrid || !achievementsListContainer) return;
         dungeonGrid.innerHTML = ''; 
         initializeDungeons();    
         renderAchievements();    
@@ -637,6 +691,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderAchievements() {
+        if (!achievementsListContainer) return;
         achievementsListContainer.innerHTML = ''; 
         if (achievements.length === 0) {
             achievementsListContainer.innerHTML = '<p>No achievements defined yet.</p>';
@@ -702,16 +757,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const dungeonName = dungeonBox.querySelector('.counter-input').dataset.dungeon;
         const input = dungeonBox.querySelector('.counter-input');
         let count = parseInt(input.value);
+        const currentStoredCount = getDungeonCount(dungeonName);
 
         if (target.classList.contains('decrease-button')) {
             if (count > 0) count--;
         } else if (target.classList.contains('increase-button')) {
             count++;
         } else if (!target.classList.contains('counter-input') && !target.classList.contains('counter-button')) {
-            const currentStoredCount = getDungeonCount(dungeonName);
-            count = (currentStoredCount === 0) ? 1 : 0;
+            count = (currentStoredCount === 0) ? 1 : currentStoredCount + 1;
         } else {
-            return; 
+            return;
         }
         input.value = count;
         setDungeonCount(dungeonName, count); 
@@ -755,7 +810,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderCharacterList() { 
         if (!characterListDiv) {
-            console.error("characterListDiv not found in renderCharacterList. Cannot render character list.");
+            console.error("characterListDiv not found. Cannot render character list.");
             return;
         }
 
@@ -763,13 +818,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const characterNames = getAllCharacterNames();
         const currentActiveCharacter = getCurrentCharacterName();
 
-        if (characterNames.length === 0) { // Simplified: if no characters, try to add Default
-             console.log("No characters exist, attempting to create default.");
-             if (!addCharacter("Default")) { // addCharacter will handle switching and re-rendering
+        if (characterNames.length === 0) {
+             if (!addCharacter("Default")) { 
                 console.error("Failed to create and set Default character.");
-                // If Default cannot be created, the list remains empty. UI should reflect this.
              }
-             return; // addCharacter will trigger necessary re-renders via switchCharacter
+             return; 
         }
 
         characterNames.forEach(name => {
@@ -795,7 +848,7 @@ document.addEventListener('DOMContentLoaded', () => {
             renameIcon.title = `Rename ${name}`;
             renameIcon.addEventListener('click', (e) => {
                 e.stopPropagation(); 
-                promptForRename(name);
+                enableInlineRename(characterItem, name); 
             });
 
             const deleteIcon = document.createElement('button'); 
@@ -820,49 +873,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Initial Setup Flow:
-    loadTrackerData(); // 1. Load data from localStorage or initialize empty structure
+    loadTrackerData(); 
 
-    // 2. Setup Character Management UI Listeners
-    if (showAddCharacterInputButton) { // This is the '+' button
+    if (showAddCharacterInputButton) {
         showAddCharacterInputButton.addEventListener('click', () => {
-            // Hide the (now obsolete) input field section if it was somehow visible
             if (addCharacterControls) { 
                 addCharacterControls.style.display = 'none';
             }
             
             const defaultName = generateDefaultCharacterName();
             if (addCharacter(defaultName)) {
-                // Successfully added, now prompt to rename this newly added character
-                // A brief timeout can sometimes help ensure the UI updates (new char selected)
-                // before the prompt appears, especially if there are many operations.
                 setTimeout(() => {
-                    promptForRename(defaultName);
-                }, 100); // 100ms delay, can be adjusted or removed if not needed
+                    const activeCharacterItem = characterListDiv.querySelector(`.character-item.active[data-character-name="${defaultName}"]`);
+                    if (activeCharacterItem) {
+                        enableInlineRename(activeCharacterItem, defaultName);
+                    } else {
+                        console.error("Could not find the newly added character item to enable renaming.");
+                    }
+                }, 100); 
             }
         });
     } else {
         console.warn("Add character button (showAddCharacterInputButton) not found.");
     }
-
-    // REMOVE event listeners for confirmAddCharacterButton and newCharacterNameInput related to the old input field
-    // The elements themselves (addCharacterControls, newCharacterNameInput, confirmAddCharacterButton) will be removed from HTML later.
     
-    // 3. Initial Render of UI based on loaded data
     renderCharacterList(); 
     if (getCurrentCharacterName()) { 
         refreshAllDataDisplay(); 
     } else {
-        dungeonGrid.innerHTML = '<p style="text-align:center; color: var(--cyber-text-secondary);">No character selected. Add one to begin!</p>';
-        achievementsListContainer.innerHTML = '<p style="text-align:center; color: var(--cyber-text-secondary);">No character selected.</p>';
-        if(overallBonusDisplay) overallBonusDisplay.textContent = 'Overall Bonus: N/A';
+        if (dungeonGrid) dungeonGrid.innerHTML = '<p style="text-align:center; color: var(--cyber-text-secondary);">No character selected. Add one to begin!</p>';
+        if (achievementsListContainer) achievementsListContainer.innerHTML = '<p style="text-align:center; color: var(--cyber-text-secondary);">No character selected.</p>';
+        if (overallBonusDisplay) overallBonusDisplay.textContent = 'Overall Bonus: N/A';
     }
 
-    // --- Sidebar Toggle Functionality ---
     const SIDEBAR_STATE_KEY = 'rotmgTrackerSidebarState';
 
     function setSidebarState(isCollapsed) {
-        if (!pageWrapper || !toggleSidebarButton) return; // Guard against missing elements
+        if (!pageWrapper || !toggleSidebarButton) return; 
         if (isCollapsed) {
             pageWrapper.classList.add('sidebar-collapsed');
             toggleSidebarButton.textContent = '☰'; 
@@ -880,7 +927,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const savedState = localStorage.getItem(SIDEBAR_STATE_KEY);
-        setSidebarState(savedState === 'collapsed'); // Apply saved state or default to expanded if null/other
+        setSidebarState(savedState === 'collapsed'); 
     } else {
         console.warn("Sidebar toggle button or page wrapper not found for toggle functionality.");
     }
