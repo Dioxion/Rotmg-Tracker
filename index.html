@@ -4,23 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RotMG Dungeon Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tomorrow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>RotMG Dungeon Completion Tracker</h1>
-        <div id="dungeonGrid" class="dungeon-grid">
-        </div>
-        <button id="resetButton" class="reset-button">Reset All Counts</button>
-
-        <section class="achievements-section">
-            <h2 class="achievements-heading">
-                Achievements <span id="overallBonusDisplay">(Overall Bonus: 0.0% Exp, 0 Fame)</span>
-            </h2>
-            <div id="achievementsList">
-                <p>No achievements unlocked yet. Get to grinding!</p>
+    <div class="page-wrapper">
+        <aside id="characterSidebar" class="character-sidebar">
+            <div class="sidebar-header">
+                <h2><span class="sidebar-title-text">Characters</span></h2>
+                <button id="showAddCharacterInputButton" class="icon-button add-char-button">+</button>
             </div>
-        </section>
+            <div id="characterListContainer" class="character-list-container">
+                <!-- Character list will be dynamically populated here -->
+            </div>
+        </aside>
+
+        <main id="mainContent" class="main-content">
+            <button id="toggleSidebarButton" class="toggle-sidebar-button">☰</button>
+            <div class="container">
+                <h1>RotMG Dungeon Completion Tracker</h1>
+                
+                <div id="dungeonGrid" class="dungeon-grid">
+                </div>
+                <button id="resetButton" class="reset-button">Reset Current Character Data</button>
+
+                <section class="achievements-section">
+                    <h2 class="achievements-heading">
+                        Achievements <span id="overallBonusDisplay">(Overall Bonus: 0.0% Exp, 0 Fame)</span>
+                    </h2>
+                    <div id="achievementsList">
+                        <p>No achievements unlocked yet. Get to grinding!</p>
+                    </div>
+                </section>
+            </div>
+        </main>
     </div>
     <script src="script.js"></script>
 </body>
